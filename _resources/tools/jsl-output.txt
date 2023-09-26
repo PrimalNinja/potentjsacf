@@ -1,0 +1,22 @@
+JavaScript Lint 0.3.0 (JavaScript-C 1.5 2004-09-24)
+Developed by Matthias Miller (http://www.JavaScriptLint.com)
+
+aclib.js
+D:\dev_jpc\aclib\aclib.js(299): warning: trailing comma is not legal in ECMA-262 object initializers
+		},
+................^
+
+D:\dev_jpc\aclib\aclib.js(307): warning: trailing comma is not legal in ECMA-262 object initializers
+			}
+........................^
+
+D:\dev_jpc\aclib\aclib.js(339): warning: trailing comma is not legal in ECMA-262 object initializers
+		},
+................^
+
+D:\dev_jpc\aclib\aclib.js(376): warning: trailing comma is not legal in ECMA-262 object initializers
+		},
+................^
+
+
+0 error(s), 4 warning(s)
