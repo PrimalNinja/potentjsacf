@@ -1,0 +1,51 @@
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>PotentJS Adventure Creation Framework</title>
+		<link rel="stylesheet" type="text/css" href="css/aclib.css">
+	</head>
+	<body>
+		<div class="game-container">
+			<div id="aclib-title" class="title">PotentJS Adventure Creation Framework</div>
+			<div id="aclib-subtitle" class="subtitle"></div>
+			
+			<div id="aclib-output"></div>
+			
+			<div class="input-container">
+				<span class="prompt">&gt;</span>
+				<input type="text" id="aclib-input" placeholder="Enter your command..." autocomplete="off">
+			</div>
+			
+			<div class="instructions">
+				Type 'help' for available commands | Press Enter to execute commands<br>
+				Powered by the <a style="color:white; text-decoration:none;" href="wiki" target="_blank">PotentJS Adventure Creation Framework</a> by <a style="color:white; text-decoration:none;" href="https://cyborgunicorn.com.au" target="_blank">Cyborg Unicorn Pty Ltd</a>
+			</div>
+		</div>
+
+		<!-- jQuery (required for your ACLib) -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		
+		<!-- Your game files -->
+		<script src="js/utils.js"></script>
+		<script src="js/basiccli.js"></script>
+		<script src="js/aclib.js"></script>
+		<script src="js/game.js"></script>
+		<script src="js/startup.js"></script>
+		
+		<script>
+			// Focus the input field when page loads
+			$(document).ready(function() {
+				$('#aclib-input').focus();
+				
+				// Auto-scroll output to bottom when new content is added
+				var objOutput = $('#aclib-output');
+				var objObserver = new MutationObserver(function() 
+				{
+					objOutput.scrollTop(objOutput[0].scrollHeight);
+				});
+				objObserver.observe(objOutput[0], { childList: true });
+			});
+		</script>
+	</body>
+</html>

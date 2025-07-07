@@ -1,0 +1,758 @@
+= PotentJS Adventure Creation Framework v20250708 =
+
+== Creating Interactive Text Adventures ==
+
+=== Overview ===
+
+'''PotentJS Adventure Creation Framework''' is designed to used by programmers and non-programmers alike, hense the unusual 'programming' conventions.
+
+'''PotentJS Adventure Creation Framework''' is a JavaScript-based text adventure framework that allows developers to create sophisticated interactive fiction using an accessible, script-like syntax. The framework provides powerful features like recursive container management, state-based interactions, character switching, and a realistic pillaging system.
+
+{|
+! Download !! Description
+|-
+| [https://potentjs.com/wiki/downloads/sample-game.js|Sample Game] || The sourcecode for the provided playable sample game which you can [https://potentjs.com|play online here].
+|-
+| [https://cyborgunicorn.com.au/wiki/downloads/potentjsacf.zip|PotentJS Adventure Creation Framework] || The framework released under MIT License by [https://cyborgunicorn.com.au|Cyborg Unicorn Pty Ltd].
+|}
+
+- - - -
+
+=== Core Architecture ===
+
+The framework consists of three main components:
+
+*'''ACLib''' - Core utility library for world manipulation
+*'''BasicCLI''' - Command processing and user interface 
+*'''Game''' - Content definition using JavaScript object literals
+
+- - - -
+
+=== Every-Game Structure ===
+
+Every game will have a basic structure as follows:
+
+<code>
+function Game() {}
+
+Game.Title = "";
+Game.SubTitle = "";
+Game.Overview = [ "" ];
+
+Game.Players = {};
+Game.NPCs = {};
+Game.Objects = {};
+Game.Fixtures = {};
+Game.Locations = {};
+
+Game.Players.myself = Game.Players.
+Game.Players.myself.alias = "myself";
+
+Game.Players.object.language.verbs.verb = function() 
+
+Game.Initialise() {};
+</code>
+
+- - - -
+
+=== Game Object Structure ===
+
+All game entities (Players, NPCs, Objects, Fixtures and Locations) follow a consistent structure with these standard properties:
+
+<code>
+Game.Objects.example_item = 
+{
+    description: "Description shown when examined",
+    name: "display name",
+    alias: "alternate name", 
+    location: "descriptive location text",
+    type: "object", // object, player, npc, fixture, location
+    
+    current_states: [ "alive", "closed" ],
+    states: 
+	{
+        alive: "State description",
+        closed: "State description"
+    },
+    
+    language: 
+	{
+        articles: [ "the", "a" ],
+        verbs: { examine: null, open: null },
+        verb_aliases: [ { "inspect": "examine" } ]
+    },
+    
+    fixtures: [ ],
+    objects: [ ],
+    
+    properties: 
+	{
+        quantity: 1,
+        is_container: true,
+        is_movable: true,
+        weight: 0,
+        weight_limit: 40
+    }
+};
+</code>
+
+- - - -
+
+=== Entity Types ===
+
+==== Players ====
+
+Players are controllable characters that can be switched between during gameplay:
+
+<code>
+Game.Players = 
+{
+    hero: 
+	{
+        description: "A brave adventurer",
+        name: "Hero",
+        alias: "Hero", 
+        type: "player",
+        
+        prologue: [ "Intro text when switching to this character" ],
+        epilogue: [ "Victory text for good ending" ],
+        epilogue2: [ "Alternate ending text" ],
+        
+        current_states: [ "alive", "closed" ],
+        // ... rest of standard properties
+    }
+};
+</code>
+
+Character switching: <code>Game.Players.myself = Game.Players.hero;</code>
+
+==== NPCs (Non-Player Characters) ====
+
+NPCs are characters controlled by the game that can be interacted with:
+
+<code>
+Game.NPCs = 
+{
+    wizard: 
+	{
+        description: "An ancient sorcerer", 
+        name: "Wizard",
+        type: "npc",
+        
+        current_states: [ "alive", "closed" ], // closed = can't pillage
+        // ... rest of standard properties
+    }
+};
+</code>
+
+==== Objects ====
+
+Movable items that can be picked up, used, and manipulated:
+
+<code>
+Game.Objects = 
+{
+    magic_sword: 
+	{
+        description: "A glowing blade",
+        name: "magic sword", 
+        alias: "sword",
+        type: "object",
+        
+        current_states: [ ],
+        
+        properties: 
+		{
+            is_container: false,
+            is_movable: true,
+            // ... other properties
+        }
+    }
+};
+</code>
+
+==== Fixtures ====
+
+Fixed objects that cannot be moved but can be interacted with:
+
+<code>
+Game.Fixtures = 
+{
+    heavy_door: 
+	{
+        description: "An iron door",
+        name: "iron door",
+        type: "fixture",
+        
+        current_states: [ "closed", "locked" ],
+        
+        properties: 
+		{
+            is_container: false,
+            is_movable: false
+        }
+    }
+};
+</code>
+
+==== Locations ====
+
+Rooms or areas where gameplay takes place:
+
+<code>
+Game.Locations = 
+{
+    castle_hall: 
+	{
+        description: "You stand in a grand hall",
+        name: "Castle Hall",
+        type: "location",
+        
+        fixtures: [ ],
+        objects: [ ],
+        
+        properties: 
+		{
+            is_container: true,
+            is_movable: false
+        }
+    }
+};
+</code>
+
+- - - -
+
+=== State Management System ===
+
+==== Defining States ====
+
+Objects can have multiple simultaneous states that affect gameplay. States can be ones with a special meaning (closed, dead), or they can be anything else that suits your adventure:
+
+<code>
+current_states: [ "alive", "closed", "locked" ],
+
+states: 
+{
+    alive: "The character is living",
+    dead: "The character is dead", 
+    closed: "Cannot be pillaged",
+    open: "Can be pillaged",
+    locked: "The door is locked",
+    unlocked: "The door is unlocked"
+}
+</code>
+
+==== Changing States ====
+
+Use '''ACLib.states()''' to modify object states:
+
+<code>
+// Add "dead" and "open", remove "alive" and "closed"  
+ACLib.states(Game.NPCs.enemy, [ "dead", "open" ], [ "alive", "closed" ]);
+</code>
+
+==== Testing States ====
+
+Check if an object has a specific state:
+
+<code>
+if (ACLib.is(Game.Players.hero, "alive")) 
+{
+    // Player is alive
+}
+</code>
+
+- - - -
+
+=== Verb System ===
+
+==== Defining Verbs ====
+
+Each object can respond to specific verbs (commands):
+
+<code>
+Game.Objects.treasure_chest.language.verbs.open = function() 
+{
+    if (ACLib.is(Game.Objects.treasure_chest, "locked")) 
+	{
+        ACLib.output("The chest is locked.");
+    } 
+	else 
+	{
+        ACLib.output("You open the treasure chest.");
+        ACLib.states(Game.Objects.treasure_chest, [ "open" ], [ "closed" ]);
+    }
+};
+</code>
+
+==== Verb Aliases ====
+
+Create shortcuts for verbs:
+
+Note: 'throw' is a reserved word in JavaScript, so we alias throw as chuck and toss - but you can still use throw from within your adventure.
+
+<code>
+verb_aliases: 
+[ 
+    { "inspect": "examine" },
+    { "toss": "throw" },
+    { "attack": "kill" }
+]
+</code>
+
+==== Verb Parameters ====
+
+Verbs can receive additional parameters:
+
+<code>
+Game.Objects.rock.language.verbs.throw = function(strPreposition_a, objTarget_a) 
+{
+    ACLib.output("You throw the rock at " + objTarget_a.name);
+
+    // Move rock to current location
+    ACLib.assign(ACLib.playerLocation(Game.Players.myself), Game.Objects.rock);
+};
+</code>
+
+- - - -
+
+=== Container System ===
+
+==== Making Containers ====
+
+Set '''is_container: true''' and define weight limits:
+
+<code>
+properties: 
+{
+    is_container: true,
+    weight_limit: 40  // Maximum weight this container can hold
+}
+</code>
+
+==== Nested Containers ====
+
+Containers can hold other containers, creating deep hierarchies. Players can access nested items directly:
+
+<code>
+// This works even if backpack is inside a chest:
+take coin from backpack
+</code>
+
+==== Container States ====
+
+Containers can be open/closed, affecting what players can see:
+
+<code>
+// When closed, contents are hidden in inventory display
+// But players can still access their own items
+current_states: [ "closed" ]
+</code>
+
+==== Container Access Rules ====
+
+The framework distinguishes between different container types:
+
+*'''Player Containers''' - A Player's own is always accessible regardless of state (players know their own belongings)
+*'''Other Player Containers''' - Require "open" state for access (pillaging system)f
+*'''NPC Containers''' - Require "open" state for access (pillaging system)
+*'''Object Containers''' - Respect open/closed states for realistic interaction
+
+=== Pillaging System ===
+
+==== Overview ====
+
+NPCs and players have '''open/closed''' states that control access to their inventory:
+
+*'''Closed''' = Cannot take items from them (they're alive/protected)
+*'''Open''' = Can pillage their belongings (they're dead/defeated)
+
+<code>
+// Kill an NPC to make their items accessible
+ACLib.states(Game.NPCs.enemy, [ "dead", "open" ], [ "alive", "closed" ]);
+</code>
+
+==== Implementation Example ====
+
+<code>
+Game.NPCs.guard.language.verbs.kill = function() 
+{
+    if (ACLib.is(Game.NPCs.guard, "alive")) 
+	{
+        var objSword = ACLib.findObjectByName("sword");
+        if (objSword && ACLib.has(Game.Players.myself, objSword)) 
+		{
+            ACLib.output("You defeat the guard!");
+            ACLib.states(Game.NPCs.guard, [ "dead", "open" ], [ "alive", "closed" ]);
+        } 
+		else 
+		{
+            ACLib.output("You need a weapon!");
+        }
+    } 
+	else 
+	{
+        ACLib.output("The guard is already dead.");
+    }
+};
+</code>
+
+=== World Setup and Initialisation ===
+
+==== Game.Initialise Function ====
+
+The initialisation function sets up the game world:
+
+<code>
+Game.Initialise = function() 
+{
+    ACLib.output("Initialising...");
+    
+    // Place objects in containers
+    ACLib.assign(Game.Players.hero, Game.Objects.sword, true);
+    ACLib.assign(Game.Objects.chest, Game.Objects.key, true);
+    
+    // Place fixtures in locations  
+    ACLib.fixture(Game.Locations.room, Game.Fixtures.door);
+    
+    // Place entities in locations
+    ACLib.assign(Game.Locations.room, Game.Players.hero, true);
+    ACLib.assign(Game.Locations.room, Game.NPCs.wizard, true);
+    
+    // Set starting player
+    Game.Players.myself = Game.Players.hero;
+    
+    ACLib.output("Ready!");
+    ACLib.output(Game.Overview);
+    ACLib.output(Game.Players.myself.prologue);
+};
+</code>
+
+==== The Third Parameter ====
+
+The '''true''' parameter in assign calls indicates initialisation mode:
+
+<code>
+// During initialisation - bypasses normal validation
+ACLib.assign(container, item, true);
+
+// During gameplay - performs full validation  
+ACLib.assign(container, item);
+</code>
+
+=== Advanced Features ===
+
+==== Character Switching ====
+
+Players can switch between multiple characters:
+
+<code>
+// In verb processing, character names trigger switches:
+Game.Players.wizard.language.verbs.examine = function() 
+{
+    ACLib.switchTo(Game.Players.wizard);
+};
+
+// Or use the switchTo function directly:
+ACLib.switchTo(Game.Players.hero);
+</code>
+
+==== Multiple Endings ====
+
+Characters can have different epilogues based on game state:
+
+<code>
+if (ACLib.is(Game.Players.princess, "alive")) 
+{
+    ACLib.output(Game.Players.myself.epilogue);  // Happy ending
+} 
+else 
+{
+    ACLib.output(Game.Players.myself.epilogue2); // Tragic ending
+}
+</code>
+
+==== Conditional Logic ====
+
+Game responses can change based on world state:
+
+<code>
+Game.Objects.gold.language.verbs.examine = function() 
+{
+    if (ACLib.is(Game.NPCs.dragon, "alive")) 
+	{
+        ACLib.output("The dragon guards the gold fiercely.");
+    } 
+	else 
+	{
+        ACLib.output("The gold glitters in the torchlight.");
+    }
+};
+</code>
+
+==== Death State Management ====
+
+Dead players have restricted actions:
+
+<code>
+// In command processing, check if player can act:
+if (!ACLib.is(Game.Players.myself, "alive")) 
+{
+    m_objThis.objACLib.output("You are dead!");
+    return; // Prevent action
+}
+</code>
+
+=== Common Patterns ===
+
+==== Door System ====
+
+<code>
+Game.Fixtures.castle_gate.language.verbs.open = function() 
+{
+    if (ACLib.is(Game.Fixtures.castle_gate, "locked")) 
+	{
+        ACLib.output("The gate is locked.");
+    } 
+	else if (ACLib.is(Game.Fixtures.castle_gate, "closed")) 
+	{
+        ACLib.output("You open the gate.");
+        ACLib.states(Game.Fixtures.castle_gate, [ "open" ], [ "closed" ]);
+    } 
+	else 
+	{
+        ACLib.output("The gate is already open.");
+    }
+};
+</code>
+
+==== Key-Based Unlocking ====
+
+<code>
+Game.Fixtures.treasure_door.language.verbs.unlock = function() 
+{
+    var objKey = ACLib.findObjectByName("golden key");
+    if (objKey && ACLib.has(Game.Players.myself, objKey)) 
+	{
+        ACLib.output("You unlock the door with the golden key.");
+        ACLib.states(Game.Fixtures.treasure_door, [ "unlocked" ], [ "locked" ]);
+    } 
+	else 
+	{
+        ACLib.output("You don't have the right key.");
+    }
+};
+</code>
+
+==== Movement Between Locations ====
+
+<code>
+Game.Fixtures.north_exit.language.verbs.enter = function() 
+{
+    if (ACLib.is(Game.Fixtures.north_exit, "open")) 
+	{
+        ACLib.output("You go north.");
+        ACLib.assign(Game.Locations.north_room, Game.Players.myself);
+    } 
+	else 
+	{
+        ACLib.output("The way is blocked.");
+    }
+};
+</code>
+
+=== Best Practices ===
+
+==== Naming Conventions ====
+
+Use consistent prefixes for different entity types:
+
+{|
+! Type !! Prefix !! Example
+|-
+| Variables || Type prefix || <code>objItem, strName, blnFound</code>
+|-
+| Players || Name || <code>Game.Players.hero</code>
+|-
+| NPCs || Name || <code>Game.NPCs.wizard</code> 
+|-
+| Objects || Descriptive || <code>Game.Objects.magic_sword</code>
+|-
+| Fixtures || Location_item || <code>Game.Fixtures.castle_door</code>
+|-
+| Locations || Descriptive || <code>Game.Locations.throne_room</code>
+|}
+
+==== Error Handling ====
+
+Always validate object existence and states:
+
+<code>
+Game.Objects.potion.language.verbs.drink = function() 
+{
+    if (ACLib.is(Game.Objects.potion, "empty")) 
+	{
+        ACLib.output("The potion bottle is empty.");
+    } 
+	else 
+	{
+        ACLib.output("You drink the healing potion.");
+        ACLib.states(Game.Objects.potion, [ "empty" ], [ "full" ]);
+    }
+};
+</code>
+
+==== Immersive Descriptions ====
+
+Use detailed, contextual descriptions:
+
+<code>
+description: "The ancient sword bears intricate runes along its blade, glowing faintly with inner power."
+</code>
+
+Rather than:
+
+<code>
+description: "A sword."
+</code>
+
+=== Complete Example Game ===
+
+Here's a small but complete adventure setup:
+
+<code>
+</code>
+
+=== Testing and Debugging ===
+
+==== Debug Commands ====
+
+The framework includes debug commands for development:
+
+* debugp [player] - Show player object structure
+* debugn [npc] - Show NPC object structure  
+* debugo [object] - Show object structure
+* cls - Clear screen
+
+==== Common Issues ====
+
+{|
+! Problem !! Solution
+|-
+| "I don't see that here" || Object not in current location or player inventory
+|-
+| "You can't take that" || Object has '''is_movable: false'''
+|-
+| "The container is closed" || Container state is "closed", need to open first
+|-
+| Verb doesn't work || Verb not defined in object's language.verbs
+|-
+| State changes don't work || Check '''current_states''' array initialisation
+|}
+
+=== Extending the Framework ===
+
+==== Custom Properties ====
+
+Add domain-specific properties:
+
+<code>
+properties: 
+{
+    // Standard properties
+    is_container: false,
+    is_movable: true,
+    
+    // Custom properties
+    magical_power: 50,
+    durability: 100,
+    value_in_gold: 250
+}
+</code>
+
+==== Event System ====
+
+Implement game-wide events:
+
+<code>
+Game.Events = 
+{
+    onPlayerDeath: function() 
+	{
+        ACLib.output("GAME OVER");
+        // Disable further commands
+    },
+    
+    onVictory: function() 
+	{
+        ACLib.output("Congratulations!");
+        // Show final score
+    }
+};
+</code>
+
+=== Advanced Examples ===
+
+==== Multi-Room Navigation ====
+
+<code>
+Game.Fixtures.north_exit.language.verbs.go = function() 
+{
+    ACLib.output("You head north.");
+    ACLib.assign(Game.Locations.north_chamber, Game.Players.myself);
+};
+
+Game.Fixtures.south_exit.language.verbs.go = function() 
+{
+    ACLib.output("You return south.");
+    ACLib.assign(Game.Locations.main_hall, Game.Players.myself);
+};
+</code>
+
+==== Complex Puzzles ====
+
+<code>
+Game.Fixtures.magic_altar.language.verbs.use = function() 
+{
+    var objGem = ACLib.findObjectByName("ruby");
+    var objStaff = ACLib.findObjectByName("staff");
+    
+    if (objGem && objStaff && 
+        ACLib.has(Game.Players.myself, objGem) && 
+        ACLib.has(Game.Players.myself, objStaff)) 
+	{
+        
+        ACLib.output("The gem and staff resonate together!");
+        ACLib.output("A secret passage opens!");
+        ACLib.states(Game.Fixtures.secret_door, [ "open" ], [ "closed" ]);
+    } 
+	else 
+	{
+        ACLib.output("Nothing happens.");
+    }
+};
+</code>
+
+==== Inventory Management ====
+
+<code>
+Game.Objects.magic_bag.language.verbs.examine = function() 
+{
+    ACLib.output("A bag that can hold unlimited items.");
+    
+    if (ACLib.is(Game.Objects.magic_bag, "open")) 
+	{
+        ACLib.inventory(Game.Objects.magic_bag, "Contents:", "The bag is empty.");
+    } 
+	else 
+	{
+        ACLib.output("The bag is closed.");
+    }
+};
+</code>
+
+This framework provides a solid foundation for creating rich, interactive text adventures with minimal programming knowledge while offering the flexibility to implement complex game mechanics and storytelling.
+
+- - - -
+
+Powered by %APPNAME%
