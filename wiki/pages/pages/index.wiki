@@ -4,7 +4,7 @@
 
 === Overview ===
 
-'''PotentJS Adventure Creation Framework''' is designed to used by programmers and non-programmers alike, hense the unusual 'programming' conventions.
+'''PotentJS Adventure Creation Framework''' is designed to be used by programmers and non-programmers alike, hense the unusual 'programming' conventions.
 
 '''PotentJS Adventure Creation Framework''' is a JavaScript-based text adventure framework that allows developers to create sophisticated interactive fiction using an accessible, script-like syntax. The framework provides powerful features like recursive container management, state-based interactions, character switching, and a realistic pillaging system.
 
@@ -15,8 +15,6 @@
 |-
 | [https://cyborgunicorn.com.au/wiki/downloads/potentjsacf.zip|PotentJS Adventure Creation Framework] || The framework released under MIT License by [https://cyborgunicorn.com.au|Cyborg Unicorn Pty Ltd].
 |}
-
-- - - -
 
 === Core Architecture ===
 
@@ -354,7 +352,7 @@ current_states: [ "closed" ]
 The framework distinguishes between different container types:
 
 *'''Player Containers''' - A Player's own is always accessible regardless of state (players know their own belongings)
-*'''Other Player Containers''' - Require "open" state for access (pillaging system)f
+*'''Other Player Containers''' - Require "open" state for access (pillaging system)
 *'''NPC Containers''' - Require "open" state for access (pillaging system)
 *'''Object Containers''' - Respect open/closed states for realistic interaction
 
@@ -583,8 +581,6 @@ Use consistent prefixes for different entity types:
 | Locations || Descriptive || <code>Game.Locations.throne_room</code>
 |}
 
-- - - -
-
 ==== Error Handling ====
 
 Always validate object existence and states:
@@ -622,8 +618,11 @@ description: "A sword."
 
 Here's a small but complete adventure setup:
 
-<code>
-</code>
+{|
+! Download !! Description
+|-
+| [https://potentjs.com/wiki/downloads/sample-game.js|Sample Game] || The sourcecode for the provided playable sample game which you can [https://potentjs.com|play online here].
+|}
 
 === Testing and Debugging ===
 
@@ -756,5 +755,4 @@ Game.Objects.magic_bag.language.verbs.examine = function()
 This framework provides a solid foundation for creating rich, interactive text adventures with minimal programming knowledge while offering the flexibility to implement complex game mechanics and storytelling.
 
 - - - -
-
 Powered by %APPNAME%
