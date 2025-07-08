@@ -645,7 +645,7 @@ function BasicCLI()
             if (strVerb === 'cls') { m_objThis.objACLib.cls(); } 
             else if (strVerb === 'help') { cmdHelp(); } 
 			else if (strVerb === 'inventory' || strVerb === 'i') { cmdInventory(); } 
-			else if (strVerb === 'look' || strVerb === 'l') { cmdLook(); }
+			else if ((strVerb === 'look' || strVerb === 'l') && (strObject1.length === 0)) { cmdLook(); }
 			else if (strVerb === 'where') { cmdWhere(); }
 			else if (strVerb === 'who') { cmdWho(); }
 
@@ -654,14 +654,14 @@ function BasicCLI()
 			else if (strVerb === 'debugo') { cmdDebugO(strObject1); }				
 			else if (strVerb === 'debugp') { cmdDebugP(strObject1); }
 			else if ((strVerb === 'discard' || strVerb === 'drop' || strVerb === 'chuck' || strVerb === 'throw') && strPreposition.length === 0) { cmdDrop(strVerb, strObject1); }
-			else if (strVerb === 'get' || strVerb === 'pickup') { cmdPickup(strVerb, strObject1); }
+			else if ((strVerb === 'get' || strVerb === 'pickup' || strVerb === 'take') && strPreposition.length === 0) { cmdPickup(strVerb, strObject1); }
 			else if (strVerb === 'swap' || strVerb === 'switch') { cmdSwap(strObject1); }
 
 			// two specified objects
 			else if ((strVerb === 'chuck' || strVerb === 'throw') && strPreposition === 'at') { cmdChuck(strVerb, strObject1, strPreposition, strObject2); }
 			else if (strVerb === 'give' && strPreposition === 'to') { cmdGive(strVerb, strObject1, strPreposition, strObject2); }
 			else if (strVerb === 'put' && (strPreposition === 'in' || strPreposition === 'on' || strPreposition === 'into' || strPreposition === 'onto')) { cmdPut(strVerb, strObject1, strPreposition, strObject2); }
-			else if (strVerb === 'take' && strPreposition === 'from') { cmdTake(strVerb, strObject1, strPreposition, strObject2); }
+			else if (strVerb === 'get' || strVerb === 'take' && strPreposition === 'from') { cmdTake(strVerb, strObject1, strPreposition, strObject2); }
 			else { cmdVerb(strVerb, strObject1, strPreposition, strObject2); }
         }
     }

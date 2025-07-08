@@ -586,5 +586,7 @@ function ACLib()
 			m_objThis.output(m_objThis.properties.game.Players.myself.prologue); 
 			m_objThis.properties.game.Players.myself.prologue = "";
 		}
+
+		m_objThis.look();
 	};
 }

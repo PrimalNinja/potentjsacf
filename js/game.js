@@ -66,7 +66,8 @@ Game.Players =
 				kill: null,
 				kiss: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -143,7 +144,8 @@ Game.Players =
 				inventory: null,
 				kiss: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -187,7 +189,8 @@ Game.NPCs =
 				examine: null,
 				kill: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -230,7 +233,8 @@ Game.Objects =
 				close: null,
 				open: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -269,7 +273,8 @@ Game.Objects =
 				close: null,
 				open: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -304,7 +309,8 @@ Game.Objects =
 			{
 				examine: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -339,7 +345,8 @@ Game.Objects =
 			{
 				examine: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -374,7 +381,8 @@ Game.Objects =
 			{
 				examine: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -409,7 +417,8 @@ Game.Objects =
 			{
 				examine: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -446,6 +455,7 @@ Game.Objects =
 				examine: null
 			},
 			verb_aliases: [ { "inspect": "examine" },
+							{ "look": "examine" },
 							{ "toss": "chuck" }, 
 							{ "throw": "chuck" } ]
 		},
@@ -482,7 +492,8 @@ Game.Objects =
 			{
 				examine: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -530,7 +541,9 @@ Game.Fixtures =
 				unlock: null,
 				enter: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "go": "enter" },
+							{ "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -574,7 +587,9 @@ Game.Fixtures =
 				unlock: null,
 				enter: null
 			},
-			verb_aliases: [ { "inspect": "examine" } ]
+			verb_aliases: [ { "go": "enter" },
+							{ "inspect": "examine" }, 
+							{ "look": "examine" } ]
 		},
 
 		fixtures: [ ],
@@ -1037,6 +1052,7 @@ Game.Fixtures.south_room_red_door.language.verbs.enter = function()
     {
         ACLib.output("You enter the red door."); 
         ACLib.assign(Game.Locations.north_room, Game.Players.myself);
+		ACLib.look();
     }
     else if (ACLib.is(Game.Fixtures.south_room_red_door, "locked"))
     {
@@ -1134,6 +1150,7 @@ Game.Fixtures.north_room_red_door.language.verbs.enter = function()
     {
         ACLib.output("You enter the red door."); 
         ACLib.assign(Game.Locations.south_room, Game.Players.myself);
+		ACLib.look();
     }
     else if (ACLib.is(Game.Fixtures.north_room_red_door, "locked"))
     {
@@ -1194,4 +1211,6 @@ Game.Initialise = function()
 	ACLib.output("You are " + Game.Players.myself.name + ".");
 	ACLib.output(Game.Players.myself.prologue); 
 	Game.Players.myself.prologue = "";
+	
+	ACLib.look();
 };
